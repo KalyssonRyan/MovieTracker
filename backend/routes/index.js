@@ -16,20 +16,41 @@ router.get("/movies", async (req, res) => {
   }
 });
 
+router.get("/movies/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await client.query("SELECT * FROM movies WHERE id=$1", [id]);
+
+    if (result.rowCount == 0) {
+      return res.status(404).json({
+        error: "esse ID não foi encontrado",
+      });
+    }
+    return res.status(200).json({
+      data: result.rows[0],
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      error: "Erro Interno,cheque os logs",
+    });
+  }
+});
+
 router.post("/movies", async (req, res) => {
-  try{
+  try {
     const { nome, genero, status, nota, poster } = req.body;
-    
+
     const result = await client.query(
       "INSERT INTO movies(nome,genero,status,nota,poster) VALUES($1,$2,$3,$4,$5) RETURNING *",
       [nome, genero, status, nota, poster],
     );
     return res.status(200).json(result.rows[0]);
-  }catch(err){
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     return res.status(500).json({
-      error: "Erro interno cheque os logs"
-    })
+      error: "Erro interno cheque os logs",
+    });
   }
 });
 
