@@ -54,4 +54,24 @@ router.post("/movies", async (req, res) => {
   }
 });
 
+router.delete("/movies/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await client.query("DELETE FROM movies WHERE id=$1", [id]);
+
+    if (result.rowCount == 0) {
+      return res.status(400).json({
+        error: "Filme não encontrado",
+      });
+    }
+    return res.status(200).json({
+      message: "Filme deletado com sucesso!",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      error: "Ocorreu um erro interno, cheque os logs",
+    });
+  }
+});
 module.exports = router;
