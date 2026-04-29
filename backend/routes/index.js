@@ -74,4 +74,27 @@ router.delete("/movies/:id", async (req, res) => {
     });
   }
 });
+
+router.put("/movies/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { nome, genero, status, nota, poster } = req.body;
+    // não esqueça o where pfvr
+    const result = await client.query(
+      "UPDATE movies SET nome=$1,genero=$2,status=$3,nota=$4,poster=$5 WHERE id=$6 RETURNING *",
+      [nome, genero, status, nota, poster, id],
+    );
+    if (result.rowCount == 0) {
+      return res.status(400).json({
+        error: "Id não encontrado",
+      });
+    }
+    return res.status(200).json(result.rows[[0]]);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      error: "Ocorreu um erro interno, cheque os logs",
+    });
+  }
+});
 module.exports = router;
