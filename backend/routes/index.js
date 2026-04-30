@@ -102,7 +102,7 @@ router.get("/search", async (req, res) => {
   try {
     const { pesquisa } = req.query;
     const resposta = await fetch(
-      `http://www.omdbapi.com/?apikey=${process.env.MOVIE_API}&t=${pesquisa}`,
+      `http://www.omdbapi.com/?apikey=${process.env.MOVIE_API}&s=${pesquisa}`,
     );
     const data = await resposta.json();
     console.log(data);
