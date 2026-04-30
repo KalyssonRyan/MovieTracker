@@ -9,7 +9,17 @@ type Movies = {
   nota: Number;
   poster: string;
 };
+
 function ListMoviePage() {
+  async function deletar(id: string) {
+    const confirmado = window.confirm("Deseja deletar mesmo?");
+    if (confirmado) {
+      await fetch(`http://localhost:3000/movies/${id}`, {
+        method: "DELETE",
+      });
+      setMovies(movies.filter((u) => u.id !== id));
+    }
+  }
   const [movies, setMovies] = useState<Movies[]>([]);
   useEffect(() => {
     async function run() {
@@ -32,6 +42,7 @@ function ListMoviePage() {
           <p>{movie.genero}</p>
           <img src={movie.poster} alt="" />
           <Link to={`/edit/${movie.id}`}>Editar</Link>
+          <button onClick={() => deletar(movie.id)}>Excluir</button>
         </div>
       ))}
     </>
