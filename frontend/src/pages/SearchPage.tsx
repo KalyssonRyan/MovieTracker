@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 type OmdbResult = {
   imdbID: string;
   Title: string;
@@ -11,8 +12,27 @@ function SearchPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [filmeSelecionado, setFilmeSelecionado] = useState<OmdbResult | null>();
   const [busca, setBusca] = useState("");
-  const [nome, setNome] = useState("");
+  const [status, setStatus] = useState("");
+  const [nota, setNota] = useState(0);
   const [resultado, setResultado] = useState<OmdbResult[]>([]);
+  const navigate = useNavigate();
+  async function enviar(event: React.FormEvent) {
+    event.preventDefault();
+    await fetch("http://localhost:3000/movies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: filmeSelecionado?.Title,
+        genero: filmeSelecionado?.Type,
+        status: status,
+        nota: nota,
+        poster: filmeSelecionado?.Poster,
+      }),
+    });
+    setStatus("");
+    setNota(0);
+    navigate("/");
+  }
   useEffect(() => {
     async function Buscar() {
       const timer = setTimeout(async () => {
@@ -74,25 +94,30 @@ function SearchPage() {
             <h2>{filmeSelecionado.Title}</h2>
             <img src={filmeSelecionado.Poster} alt="" width={100} />
 
-            <form>
+            <form action="" onSubmit={enviar}>
               <div>
                 <label>Status</label>
-                <select>
+                <select onChange={(e) => setStatus(e.target.value)}>
                   <option value="assistido">Assistido</option>
-                  <option value="quero_assistir">Quero assistir</option>
-                  <option value="assistindo">Assistindo</option>
+                  <option value="quero_ver">Quero assistir</option>
+                  <option value="dropado">dropado</option>
                 </select>
               </div>
 
               <div>
                 <label>Nota</label>
-                <input type="number" min={0} max={10} />
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  onChange={(e) => setNota(Number(e.target.value))}
+                />
               </div>
 
               <button type="button" onClick={() => setFilmeSelecionado(null)}>
                 Cancelar
               </button>
-              <button type="button">Salvar</button>
+              <button type="submit">Salvar</button>
             </form>
           </div>
         </div>
