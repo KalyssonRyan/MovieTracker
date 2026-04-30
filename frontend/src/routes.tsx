@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import ListMoviePage from "./pages/ListMoviePage";
 import AddPage from "./pages/AddPage";
 import EditPage from "./pages/EditPage";
+import SearchPage from "./pages/SearchPage";
 
 function RouterList() {
   return (
@@ -12,6 +13,7 @@ function RouterList() {
         <Route path="/movies" element={<ListMoviePage />} />
         <Route path="/create" element={<AddPage />} />
         <Route path="/edit/:id" element={<EditPage />} />
+        <Route path="/search/" element={<SearchPage />} />
       </Routes>
     </BrowserRouter>
   );
