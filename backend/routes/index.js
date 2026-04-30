@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const { client } = require("../config/database");
@@ -94,6 +95,22 @@ router.put("/movies/:id", async (req, res) => {
     console.log(err);
     return res.status(500).json({
       error: "Ocorreu um erro interno, cheque os logs",
+    });
+  }
+});
+router.get("/search", async (req, res) => {
+  try {
+    const { pesquisa } = req.query;
+    const resposta = await fetch(
+      `http://www.omdbapi.com/?apikey=${process.env.MOVIE_API}&t=${pesquisa}`,
+    );
+    const data = await resposta.json();
+    console.log(data);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log("deu ruim: ", err);
+    return res.status(500).json({
+      error: "Erro Interno,cheque os logs",
     });
   }
 });
