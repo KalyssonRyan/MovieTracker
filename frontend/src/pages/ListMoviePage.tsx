@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 type Movies = {
   id: string;
@@ -30,6 +31,7 @@ function ListMoviePage() {
           <h3>{movie.nome}</h3>
           <p>{movie.genero}</p>
           <img src={movie.poster} alt="" />
+          <Link to={`/edit/${movie.id}`}>Editar</Link>
         </div>
       ))}
     </>
