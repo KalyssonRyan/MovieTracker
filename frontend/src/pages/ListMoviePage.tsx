@@ -11,6 +11,7 @@ type Movies = {
 };
 
 function ListMoviePage() {
+  const [carregando, setCarregando] = useState(true);
   async function deletar(id: string) {
     const confirmado = window.confirm("Deseja deletar mesmo?");
     if (confirmado) {
@@ -24,11 +25,14 @@ function ListMoviePage() {
   useEffect(() => {
     async function run() {
       try {
+        setCarregando(true);
         const result = await fetch("http://localhost:3000/movies");
         const data = await result.json();
         setMovies(data.data);
       } catch (err) {
         console.log(err);
+      } finally {
+        setCarregando(false);
       }
     }
     run();
@@ -36,6 +40,12 @@ function ListMoviePage() {
   return (
     <>
       <h1>aqui vai a lista de filmes</h1>
+      {carregando && (
+        <div>
+          <p>Carregando...</p>
+        </div>
+      )}
+      {movies.length == 0 && <h1>Nao tem filme ainda</h1>}
       {movies.map((movie) => (
         <div key={movie.id}>
           <h3>{movie.nome}</h3>
