@@ -16,7 +16,7 @@ function SearchPage() {
   );
 
   const [busca, setBusca] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("assistido");
   const [nota, setNota] = useState(0);
   const [resultado, setResultado] = useState<OmdbResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -142,6 +142,7 @@ function SearchPage() {
                 <label className="text-sm text-zinc-400">Status</label>
                 <select
                   onChange={(e) => setStatus(e.target.value)}
+                  value={status}
                   className="w-full mt-1 bg-zinc-800 border border-white/10 rounded px-2 py-2"
                 >
                   <option value="assistido">Assistido</option>
