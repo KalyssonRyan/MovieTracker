@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const { client } = require("../config/database");
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 router.get("/movies", async (req, res) => {
   try {
     const result = await client.query("SELECT * FROM movies");
@@ -112,6 +113,51 @@ router.get("/search", async (req, res) => {
     return res.status(500).json({
       error: "Erro Interno,cheque os logs",
     });
+  }
+});
+
+router.post("/register", async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+    const result = await client.query("SELECT * FROM users WHERE email=$1", [
+      email,
+    ]);
+    if (result.rowCount == 0) {
+      const hash = await bcrypt.hash(senha, 10);
+      const insert = await client.query(
+        "INSERT INTO users(email,password) VALUES($1,$2)",
+        [email, hash],
+      );
+      return res.status(200).json(insert.rows[0]);
+    }
+    return res.status(400).json({ error: "Email já cadastrado" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Erro interno, chque os logs" });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+    const result = await client.query("SELECT * FROM users WHERE email=$1", [
+      email,
+    ]);
+
+    if (result.rowCount == 0) {
+      return res.status(400).json({ error: "Usuário nao encontrado" });
+    }
+    const senhaCorreta = await bcrypt.compare(senha, result.rows[0].password);
+    if (!senhaCorreta) {
+      return res.status(401).json({ error: "Senha incorreta" });
+    }
+    const token = jwt.sign({ userId: result.rows[0].id }, process.env.KEYWORD, {
+      expiresIn: "1d",
+    });
+    return res.status(200).json({ token });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Erro interno, cheque os logs" });
   }
 });
 module.exports = router;
